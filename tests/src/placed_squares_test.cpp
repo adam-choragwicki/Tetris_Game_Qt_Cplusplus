@@ -1,25 +1,25 @@
 #include "common_test_fixture.h"
-#include "model/placed_squares.h"
+#include "placed_squares.h"
 
 class PlacedSquaresTest : public CommonTestFixture
 {
 protected:
-    PlacedSquaresTest() : coordinatesToSquaresMapping_(placedSquares_.getCoordinatesToSquaresMapping())
+    PlacedSquaresTest()
     {}
 
-    void fillRow(int row)
+    void fillRow(const int row)
     {
-        for(int i = 1; i <= 10; ++i)
+        for (int i = 1; i <= 10; ++i)
         {
             placedSquares_.addSquare(Coordinates{i, row}, DEFAULT_SQUARE_COLOR);
         }
     }
 
-    bool isRowEmpty(const int row)
+    bool isRowEmpty(const int row) const
     {
-        for(int i = 1; i <= 10; i++)
+        for (int i = 1; i <= 10; i++)
         {
-            if(coordinatesToSquaresMapping_.contains(Coordinates{i, row}))
+            if (placedSquares_.isTileAtCoordinatesOccupied(Coordinates{i, row}))
             {
                 return false;
             }
@@ -28,11 +28,11 @@ protected:
         return true;
     }
 
-    bool isRowFull(const int row)
+    bool isRowFull(const int row) const
     {
-        for(int i = 1; i <= 10; i++)
+        for (int i = 1; i <= 10; i++)
         {
-            if(!coordinatesToSquaresMapping_.contains((Coordinates{i, row})))
+            if (!placedSquares_.isTileAtCoordinatesOccupied(Coordinates{i, row}))
             {
                 return false;
             }
@@ -42,7 +42,6 @@ protected:
     }
 
     PlacedSquares placedSquares_;
-    const CoordinatesToSquaresMapping& coordinatesToSquaresMapping_;
 
 private:
     void SetUp() override
@@ -54,16 +53,16 @@ private:
 
 TEST_F(PlacedSquaresTest, CreatePlacedSquares)
 {
-    EXPECT_EQ(coordinatesToSquaresMapping_.size(), 0);
+    EXPECT_EQ(placedSquares_.size(), 0);
 }
 
 TEST_F(PlacedSquaresTest, AddSquare)
 {
-    EXPECT_FALSE(coordinatesToSquaresMapping_.contains(Coordinates{5, 5}));
+    EXPECT_FALSE(placedSquares_.isTileAtCoordinatesOccupied(Coordinates{5, 5}));
 
     placedSquares_.addSquare(Coordinates{5, 5}, DEFAULT_SQUARE_COLOR);
 
-    EXPECT_TRUE(coordinatesToSquaresMapping_.contains(Coordinates{5, 5}));
+    EXPECT_TRUE(placedSquares_.isTileAtCoordinatesOccupied(Coordinates{5, 5}));
 }
 
 TEST_F(PlacedSquaresTest, FindFullRows)
@@ -71,7 +70,7 @@ TEST_F(PlacedSquaresTest, FindFullRows)
     fillRow(5);
     fillRow(7);
 
-    auto fullRows = placedSquares_.findFullRowsNumbers();
+    const auto fullRows = placedSquares_.findFullRowsNumbers();
 
     EXPECT_EQ(fullRows.size(), 2);
     EXPECT_EQ(fullRows.at(0), 5);
@@ -80,11 +79,11 @@ TEST_F(PlacedSquaresTest, FindFullRows)
 
 TEST_F(PlacedSquaresTest, DropRowsAbove)
 {
-    const int fullRow = 5;
+    constexpr int fullRow = 5;
 
     fillRow(fullRow);
 
-    const int rowBelow = 6;
+    constexpr int rowBelow = 6;
 
     EXPECT_TRUE(isRowFull(fullRow));
     EXPECT_TRUE(isRowEmpty(rowBelow));
@@ -97,7 +96,7 @@ TEST_F(PlacedSquaresTest, DropRowsAbove)
 
 TEST_F(PlacedSquaresTest, RemoveFullRow)
 {
-    const int fullRow = 5;
+    constexpr int fullRow = 5;
 
     fillRow(fullRow);
 

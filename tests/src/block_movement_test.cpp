@@ -7,22 +7,21 @@ class BlockMovementTest : public CommonTestFixture
 protected:
     BlockFactory blockFactory_;
     PlacedSquares placedSquares_;
-    BlockMovementSimulationResult blockMovementSimulationResult;
+    SimulationResult blockMovementSimulationResult;
 };
 
 TEST_F(BlockMovementTest, MoveBlockLeft)
 {
     auto jBlock = blockFactory_.makeBlock(BlockShape::J, DEFAULT_SQUARE_COLOR);
-    const auto& blockCoordinates = jBlock->getAllSquaresCoordinates();
 
     EXPECT_EQ(jBlock->getSquareCoordinates(0), Coordinates({5, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(1), Coordinates({4, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(2), Coordinates({6, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(3), Coordinates({6, 3}));
 
-    blockMovementSimulationResult = BlockMovementManager::simulateHorizontalMove(*jBlock, Direction::LEFT, placedSquares_);
+    blockMovementSimulationResult = BlockMovementManager::simulateMove(*jBlock, Direction::LEFT, placedSquares_);
     EXPECT_TRUE(blockMovementSimulationResult.isValid());
-    BlockMovementManager::processMove(*jBlock, blockMovementSimulationResult);
+    BlockMovementManager::applyResult(*jBlock, blockMovementSimulationResult);
 
     EXPECT_EQ(jBlock->getSquareCoordinates(0), Coordinates({4, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(1), Coordinates({3, 2}));
@@ -33,16 +32,15 @@ TEST_F(BlockMovementTest, MoveBlockLeft)
 TEST_F(BlockMovementTest, MoveBlockRight)
 {
     auto jBlock = blockFactory_.makeBlock(BlockShape::J, DEFAULT_SQUARE_COLOR);
-    const auto& blockCoordinates = jBlock->getAllSquaresCoordinates();
 
     EXPECT_EQ(jBlock->getSquareCoordinates(0), Coordinates({5, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(1), Coordinates({4, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(2), Coordinates({6, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(3), Coordinates({6, 3}));
 
-    blockMovementSimulationResult = BlockMovementManager::simulateHorizontalMove(*jBlock, Direction::RIGHT, placedSquares_);
+    blockMovementSimulationResult = BlockMovementManager::simulateMove(*jBlock, Direction::RIGHT, placedSquares_);
     EXPECT_TRUE(blockMovementSimulationResult.isValid());
-    BlockMovementManager::processMove(*jBlock, blockMovementSimulationResult);
+    BlockMovementManager::applyResult(*jBlock, blockMovementSimulationResult);
 
     EXPECT_EQ(jBlock->getSquareCoordinates(0), Coordinates({6, 2}));
     EXPECT_EQ(jBlock->getSquareCoordinates(1), Coordinates({5, 2}));
